@@ -599,7 +599,9 @@ var SearchModal = /*#__PURE__*/function () {
                 this.nextPageToken = result.nextPageToken;
                 videos = result.items.map(function (item) {
                   var id = item.id;
-                  var isWatched = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.hasProperty)(_this4.storage.cache[id], 'watched');
+
+                  var isWatched = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.hasProperty)(_this4.storage.cache, id) && _this4.storage.cache[id].watched;
+
                   return new _videoItem__WEBPACK_IMPORTED_MODULE_7__["default"](item, isWatched);
                 });
                 return _context3.abrupt("return", videos);
