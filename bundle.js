@@ -516,24 +516,22 @@ var SearchModal = /*#__PURE__*/function () {
             while (1) {
               switch (_context2.prev = _context2.next) {
                 case 0:
-                  console.log(entries[0].isIntersecting, entries[0].intersectionRatio);
-
                   if (!(entries[0].isIntersecting && _this3.nextPageToken !== null)) {
-                    _context2.next = 8;
+                    _context2.next = 7;
                     break;
                   }
 
                   _this3.observer.unobserve(entries[0].target);
 
                   title = _this3.$searchKeyWordInput.value;
-                  _context2.next = 6;
+                  _context2.next = 5;
                   return _this3.requestVideos(title);
 
-                case 6:
+                case 5:
                   videos = _context2.sent;
                   videos && _this3.renderVideoItems(videos);
 
-                case 8:
+                case 7:
                 case "end":
                   return _context2.stop();
               }
@@ -561,7 +559,7 @@ var SearchModal = /*#__PURE__*/function () {
               case 0:
                 this.$searchResult.classList.add('loading');
                 _context3.next = 3;
-                return (0,_utils__WEBPACK_IMPORTED_MODULE_8__.requestYoutubeVideos)("".concat(_constants_constant__WEBPACK_IMPORTED_MODULE_6__.SERVER_URL, "/dummy"), _objectSpread({
+                return (0,_utils__WEBPACK_IMPORTED_MODULE_8__.requestYoutubeVideos)("".concat(_constants_constant__WEBPACK_IMPORTED_MODULE_6__.SERVER_URL, "/youtube-search"), _objectSpread({
                   q: query
                 }, this.nextPageToken && {
                   pageToken: this.nextPageToken
