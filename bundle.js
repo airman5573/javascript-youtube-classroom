@@ -208,7 +208,7 @@ var App = /*#__PURE__*/function () {
     value: function videoItemTemplate(video) {
       var isWatched = this.storage.cache[video.id].watched;
       var className = isWatched ? 'video-item--watched' : 'video-item--watch-later';
-      return "\n      <li class=\"video-item ".concat(className, "\" data-video-id=\"").concat(video.id, "\">\n        <img\n          src=\"").concat(video.thumbnailUrl, "\"\n          alt=\"video-item-thumbnail\" class=\"video-item__thumbnail\" />\n        <h4 class=\"video-item__title\">").concat(video.title, "</h4>\n        <p class=\"video-item__channel-name\">").concat(video.channelTitle, "</p>\n        <p class=\"video-item__published-date\">").concat(video.publishedAt, "</p>\n        <div class=\"video-item__management\">\n          <button type=\"button\" class=\"btn btn-square ").concat(isWatched ? 'active' : '', "\" for=\"status-change\">\u2705</button>\n          <button type=\"button\" class=\"btn btn-square\" for=\"delete\">\uD83D\uDDD1\uFE0F</button>\n        </div>\n      </li>");
+      return "\n      <li class=\"video-item ".concat(className, "\" data-video-id=\"").concat(video.id, "\" data-testid=\"saved-video-item\">\n        <img\n          src=\"").concat(video.thumbnailUrl, "\"\n          alt=\"video-item-thumbnail\" class=\"video-item__thumbnail\" />\n        <h4 class=\"video-item__title\">").concat(video.title, "</h4>\n        <p class=\"video-item__channel-name\">").concat(video.channelTitle, "</p>\n        <p class=\"video-item__published-date\">").concat(video.publishedAt, "</p>\n        <div class=\"video-item__management\">\n          <button type=\"button\" class=\"btn btn-square ").concat(isWatched ? 'active' : '', "\" for=\"status-change\" data-testid=\"video-status-change-button\">\u2705</button>\n          <button type=\"button\" class=\"btn btn-square\" for=\"delete\" data-testid=\"delete-video-button\">\uD83D\uDDD1\uFE0F</button>\n        </div>\n      </li>");
     }
   }, {
     key: "renderVideoItems",
@@ -559,7 +559,7 @@ var SearchModal = /*#__PURE__*/function () {
               case 0:
                 this.$searchResult.classList.add('loading');
                 _context3.next = 3;
-                return (0,_utils__WEBPACK_IMPORTED_MODULE_8__.requestYoutubeVideos)("".concat(_constants_constant__WEBPACK_IMPORTED_MODULE_6__.SERVER_URL, "/dummy"), _objectSpread({
+                return (0,_utils__WEBPACK_IMPORTED_MODULE_8__.requestYoutubeVideos)("".concat(_constants_constant__WEBPACK_IMPORTED_MODULE_6__.SERVER_URL, "/youtube-search"), _objectSpread({
                   q: query
                 }, this.nextPageToken && {
                   pageToken: this.nextPageToken
