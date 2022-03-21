@@ -558,7 +558,8 @@ var SearchModal = /*#__PURE__*/function () {
     key: "requestVideos",
     value: function () {
       var _requestVideos = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_5___default().mark(function _callee3(query) {
-        var _this4 = this;
+        var _result$nextPageToken,
+            _this4 = this;
 
         var result, videos;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_5___default().wrap(function _callee3$(_context3) {
@@ -585,7 +586,7 @@ var SearchModal = /*#__PURE__*/function () {
                 return _context3.abrupt("return", null);
 
               case 7:
-                this.nextPageToken = result.nextPageToken;
+                this.nextPageToken = (_result$nextPageToken = result.nextPageToken) !== null && _result$nextPageToken !== void 0 ? _result$nextPageToken : null;
                 videos = result.items.map(function (item) {
                   var id = item.id;
 
