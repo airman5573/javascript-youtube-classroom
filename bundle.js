@@ -578,7 +578,7 @@ var SearchModal = /*#__PURE__*/function () {
                 result = _context3.sent;
                 this.$searchResult.classList.remove('loading');
 
-                if (!(result === null)) {
+                if (!(result === null || result.items.length === 0)) {
                   _context3.next = 7;
                   break;
                 }
