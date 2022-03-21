@@ -69,12 +69,11 @@ var App = /*#__PURE__*/function () {
 
     (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_4__["default"])(this, "handleFilterClick", function (_ref) {
       var target = _ref.target;
-      if (target.tagName.toLowerCase() !== 'button') return;
+      if (target.localName !== 'button') return;
 
       if (target.classList.contains('active')) {
         target.classList.remove('active');
-
-        var _filter = target.getAttribute('for');
+        var _filter = target.dataset.filter;
 
         _this.$videoListContainer.classList.remove("visible-".concat(_filter));
 
@@ -82,7 +81,7 @@ var App = /*#__PURE__*/function () {
       }
 
       (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__["default"])(target.parentElement.children).forEach(function (e) {
-        var filter = e.getAttribute('for');
+        var filter = e.dataset.filter;
 
         _this.$videoListContainer.classList.remove("visible-".concat(filter));
 
@@ -90,17 +89,17 @@ var App = /*#__PURE__*/function () {
       });
 
       target.classList.add('active');
-      var filter = target.getAttribute('for');
+      var filter = target.dataset.filter;
 
       _this.$videoListContainer.classList.add("visible-".concat(filter));
     });
 
     (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_4__["default"])(this, "handleClickVideoList", function (_ref2) {
       var target = _ref2.target;
-      if (target.tagName.toLowerCase() !== 'button') return;
-      var purpose = target.getAttribute('for');
+      if (target.localName !== 'button') return;
+      var purpose = target.dataset.purpose;
       var $videoItem = target.closest('.video-item');
-      var videoId = $videoItem.getAttribute('data-video-id');
+      var videoId = $videoItem.dataset.videoId;
 
       if (purpose === 'status-change') {
         target.classList.toggle('active');
@@ -152,13 +151,21 @@ var App = /*#__PURE__*/function () {
       };
     }());
 
+    (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_4__["default"])(this, "handleKeyupEvent", function (_ref4) {
+      var key = _ref4.key;
+      if (key !== 'Escape') return;
+      if (_this.$modalContainer.classList.contains('hide')) return;
+
+      _this.closeModal();
+    });
+
     (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_4__["default"])(this, "showErrorEmoji", function () {
       _this.$errorEmoji.innerText = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.randomErrorEmoji)();
 
-      _this.$noSavedVideo.removeAttribute('hidden');
+      _this.$noSavedVideo.classList.remove('hide');
     });
 
-    this.storage = new _storage_videoStorage__WEBPACK_IMPORTED_MODULE_10__["default"](_constants_constant__WEBPACK_IMPORTED_MODULE_9__.LOCAL_STORAGE_VIDEO_LIST_KEY, _constants_constant__WEBPACK_IMPORTED_MODULE_9__.MAX_SAVABLE_VIDEOS_COUNT);
+    this.storage = new _storage_videoStorage__WEBPACK_IMPORTED_MODULE_10__["default"]();
     this.$modalContainer = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.$)('.modal-container');
     this.$videoListContainer = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.$)('#app > .saved-video-list-container');
     this.$videoList = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.$)('.video-list', this.$videoListContainer);
@@ -170,6 +177,7 @@ var App = /*#__PURE__*/function () {
     (0,_utils__WEBPACK_IMPORTED_MODULE_7__.$)('.dimmer').addEventListener('click', this.closeModal);
     this.$videoList.addEventListener('click', this.handleClickVideoList);
     this.$videoListFilters.addEventListener('click', this.handleFilterClick);
+    window.addEventListener('keyup', this.handleKeyupEvent);
     var searchModal = new _searchModal__WEBPACK_IMPORTED_MODULE_6__["default"](this.storage, this);
     searchModal.init();
     this.$errorEmoji.innerText = (0,_utils__WEBPACK_IMPORTED_MODULE_7__.randomErrorEmoji)();
@@ -208,7 +216,7 @@ var App = /*#__PURE__*/function () {
     value: function videoItemTemplate(video) {
       var isWatched = this.storage.cache[video.id].watched;
       var className = isWatched ? 'video-item--watched' : 'video-item--watch-later';
-      return "\n      <li class=\"video-item ".concat(className, "\" data-video-id=\"").concat(video.id, "\" data-testid=\"saved-video-item\">\n        <img\n          src=\"").concat(video.thumbnailUrl, "\"\n          alt=\"video-item-thumbnail\" class=\"video-item__thumbnail\" />\n        <h4 class=\"video-item__title\">").concat(video.title, "</h4>\n        <p class=\"video-item__channel-name\">").concat(video.channelTitle, "</p>\n        <p class=\"video-item__published-date\">").concat(video.publishedAt, "</p>\n        <div class=\"video-item__management\">\n          <button type=\"button\" class=\"btn btn-square ").concat(isWatched ? 'active' : '', "\" for=\"status-change\" data-testid=\"video-status-change-button\">\u2705</button>\n          <button type=\"button\" class=\"btn btn-square\" for=\"delete\" data-testid=\"delete-video-button\">\uD83D\uDDD1\uFE0F</button>\n        </div>\n      </li>");
+      return "\n      <li class=\"video-item ".concat(className, "\" data-video-id=\"").concat(video.id, "\" data-testid=\"saved-video-item\">\n        <div class=\"video-container\">\n          <iframe width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/").concat(video.id, "\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\n        </div>\n        <h4 class=\"video-item__title\">\n          <a href=\"https://www.youtube.com/watch?v=").concat(video.id, "\" target=\"_blank\">").concat(video.title, "</a>\n        </h4>\n        <p class=\"video-item__channel-name\">\n          <a href=\"https://www.youtube.com/channel/").concat(video.channelId, "\" target=\"_blank\">\n            ").concat(video.channelTitle, "\n          </a>\n        </p>\n        <p class=\"video-item__published-date\">\n          <time datetime=\"").concat(video.publishedAtAsDateTime, "\">").concat(video.publishedAt, "</time>\n        </p>\n        <div class=\"video-item__management\">\n          <button type=\"button\" class=\"btn btn-square ").concat(isWatched ? 'active' : '', "\" data-purpose=\"status-change\" data-testid=\"video-status-change-button\">\u2705</button>\n          <button type=\"button\" class=\"btn btn-square\" data-purpose=\"delete\" data-testid=\"delete-video-button\">\uD83D\uDDD1\uFE0F</button>\n        </div>\n      </li>");
     }
   }, {
     key: "renderVideoItems",
@@ -274,7 +282,7 @@ var App = /*#__PURE__*/function () {
       var _this4 = this;
 
       var observer = new MutationObserver(function () {
-        _this4.$noSavedVideo.setAttribute('hidden', true);
+        _this4.$noSavedVideo.classList.add('hide');
 
         if (_this4.$videoList.children.length === 0) {
           return _this4.showErrorEmoji();
@@ -420,7 +428,7 @@ var SearchModal = /*#__PURE__*/function () {
     (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_4__["default"])(this, "handleClickSaveButton", function (event) {
       var target = event.target;
       var $videoItem = target.closest('.video-item');
-      var videoId = $videoItem.getAttribute('data-video-id');
+      var videoId = $videoItem.dataset.videoId;
 
       try {
         _this.storage.saveVideo(videoId);
@@ -435,7 +443,7 @@ var SearchModal = /*#__PURE__*/function () {
 
     (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_4__["default"])(this, "handleClickVideoList", function (event) {
       var target = event.target;
-      if (target.tagName.toLowerCase() !== 'button') return;
+      if (target.localName !== 'button') return;
 
       _this.handleClickSaveButton(event);
     });
@@ -479,7 +487,7 @@ var SearchModal = /*#__PURE__*/function () {
       var videoListTemplate = videos.map(function (video) {
         var isSavedVideo = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.hasProperty)(_this2.storage.cache, video.id);
         var disabled = isSavedVideo ? 'disabled' : '';
-        return "<li class=\"video-item\" data-video-id=\"".concat(video.id, "\" data-testid=\"search-result-video-item\">\n          <img\n            src=\"").concat(video.thumbnailUrl, "\"\n            alt=\"video-item-thumbnail\" class=\"video-item__thumbnail\" />\n          <h4 class=\"video-item__title\">").concat(video.title, "</h4>\n          <p class=\"video-item__channel-name\">").concat(video.channelTitle, "</p>\n          <p class=\"video-item__published-date\">").concat(video.publishedAt, "</p>\n          '<button ").concat(disabled, " class=\"btn video-item__save-button\" data-testid=\"save-video-button\">\u2B07 \uC800\uC7A5</button>'\n        </li>");
+        return "<li class=\"video-item\" data-video-id=\"".concat(video.id, "\" data-testid=\"search-result-video-item\">\n          <div class=\"video-container\">\n            <iframe width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/").concat(video.id, "\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\n          </div>\n          <h4 class=\"video-item__title\">\n            <a href=\"https://www.youtube.com/watch?v=").concat(video.id, "\" target=\"_blank\">").concat(video.title, "</a>\n          </h4>\n          <p class=\"video-item__channel-name\">\n            <a href=\"https://www.youtube.com/channel/").concat(video.channelId, "\" target=\"_blank\">\n              ").concat(video.channelTitle, "\n            </a>\n          </p>\n          <p class=\"video-item__published-date\">\n            <time datetime=\"").concat(video.publishedAtAsDateTime, "\">").concat(video.publishedAt, "</time>\n          </p>\n          <button ").concat(disabled, " class=\"btn video-item__save-button\" data-testid=\"save-video-button\">\u2B07 \uC800\uC7A5</button>\n        </li>");
       }).join('');
       var $firstSkeleton = this.$videoList.querySelector('.skeleton');
       $firstSkeleton.insertAdjacentHTML('beforebegin', videoListTemplate);
@@ -692,13 +700,12 @@ var VideoStorage = /*#__PURE__*/function (_LocalStorage) {
 
   var _super = _createSuper(VideoStorage);
 
-  function VideoStorage(key, maxCount) {
+  function VideoStorage() {
     var _this;
 
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, VideoStorage);
 
-    _this = _super.call(this, key);
-    _this.maxCount = maxCount;
+    _this = _super.call(this, _constants_constant__WEBPACK_IMPORTED_MODULE_5__.LOCAL_STORAGE_VIDEO_LIST_KEY);
     _this.cache = _this.load({});
     return _this;
   }
@@ -706,39 +713,33 @@ var VideoStorage = /*#__PURE__*/function (_LocalStorage) {
   (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(VideoStorage, [{
     key: "saveVideo",
     value: function saveVideo(videoId) {
-      var videoSet = this.load({});
-
-      if (Object.keys(videoSet).length === this.maxCount) {
+      if (Object.keys(this.cache).length === _constants_constant__WEBPACK_IMPORTED_MODULE_5__.MAX_SAVABLE_VIDEOS_COUNT) {
         throw new _validation_validation_error__WEBPACK_IMPORTED_MODULE_6__["default"](_constants_constant__WEBPACK_IMPORTED_MODULE_5__.ERROR_MESSAGE.OVER_MAX_SAVABLE_VIDEO_COUNT);
       }
 
-      videoSet[videoId] = {
+      this.cache[videoId] = {
         watched: false
       };
-      this.save(videoSet);
-      this.cache = videoSet;
+      this.save(this.cache);
     }
   }, {
     key: "toggleWatchStatus",
     value: function toggleWatchStatus(videoId) {
-      var videoSet = this.load({});
-      videoSet[videoId] = {
-        watched: !videoSet[videoId].watched
+      this.cache[videoId] = {
+        watched: !this.cache[videoId].watched
       };
-      this.save(videoSet);
-      this.cache = videoSet;
+      this.save(this.cache);
     }
   }, {
     key: "removeVideo",
     value: function removeVideo(videoId) {
-      var videoSet = this.load({});
-      delete videoSet[videoId];
-      this.save(videoSet);
-      this.cache = videoSet;
+      delete this.cache[videoId];
+      this.save(this.cache);
     }
   }, {
     key: "clear",
     value: function clear() {
+      this.cache = {};
       this.save({});
     }
   }]);
@@ -984,7 +985,8 @@ var VideoItem = /*#__PURE__*/(0,_babel_runtime_helpers_createClass__WEBPACK_IMPO
       publishedAt = _item$snippet.publishedAt,
       title = _item$snippet.title,
       thumbnails = _item$snippet.thumbnails,
-      channelTitle = _item$snippet.channelTitle;
+      channelTitle = _item$snippet.channelTitle,
+      channelId = _item$snippet.channelId;
   this.id = videoId !== null && videoId !== void 0 ? videoId : item.id;
 
   var _publishedAt$split$0$ = publishedAt.split('T')[0].trim().split('-'),
@@ -993,10 +995,12 @@ var VideoItem = /*#__PURE__*/(0,_babel_runtime_helpers_createClass__WEBPACK_IMPO
       month = _publishedAt$split$0$2[1],
       day = _publishedAt$split$0$2[2];
 
+  this.publishedAtAsDateTime = "".concat(year, "-").concat(month, "-").concat(day);
   this.publishedAt = "".concat(year, "\uB144 ").concat(month, "\uC6D4 ").concat(day, "\uC77C");
   this.title = title;
   this.thumbnailUrl = thumbnails.medium.url;
   this.channelTitle = channelTitle;
+  this.channelId = channelId;
   this.isWatched = isWatched;
 });
 
@@ -1024,7 +1028,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body {\n    padding: 64px 0;\n    font-size: 16px;\n}\n\n#app {\n  margin: 0 auto;\n  width: calc(240px * 4 + var(--gutter-xl) * 3);\n}\n\nheader > h1 {\n    text-align: center;\n    font-weight: bold;\n    font-size: 34px;\n    line-height: 36px;\n    margin-bottom: 64px;\n}\n\n.nav {\n    display: flex;\n    justify-content: space-between;\n    margin-bottom: 39px;\n}\n\n.nav > .btn-group > .btn {\n  width: 117px;\n  height: 36px;\n  font-weight: 500;\n}\n\n.video-item {\n  overflow: hidden;\n}\n\n.video-item__thumbnail {\n  width: 100%;\n}\n\n.video-item__title {\n  font-weight: bold;\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 4px 0;\n}\n\n.video-item__channel-name {\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.video-item__published-date {\n  font-size: 12px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n}\n\n.video-item__save-button {\n  float: right;\n}\n\n.video-item__management {\n  display: flex;\n  justify-content: flex-end;\n}\n.video-item__management .btn {\n  margin-left: 10px;\n}\n\n#app > .saved-video-list-container {\n  max-height: calc(100vh - 200px);\n  overflow-y: scroll;\n  scroll-behavior: smooth;\n}\n#app > .saved-video-list-container .video-item {\n  display: block;\n}\n\n#app > .saved-video-list-container.visible-watch-later .video-item--watched {\n  display: none;\n}\n#app > .saved-video-list-container.visible-watched .video-item--watch-later {\n  display: none;\n}\n\n.no-saved-video {\n  text-align: center;\n}\n\n.no-saved-video .error-emoji {\n  font-size: 200px;\n}\n\n.no-saved-video .message {\n  font-size: 50px;\n}", "",{"version":3,"sources":["webpack://./src/css/app.css"],"names":[],"mappings":"AAAA;IACI,eAAe;IACf,eAAe;AACnB;;AAEA;EACE,cAAc;EACd,6CAA6C;AAC/C;;AAEA;IACI,kBAAkB;IAClB,iBAAiB;IACjB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;;AAEA;IACI,aAAa;IACb,8BAA8B;IAC9B,mBAAmB;AACvB;;AAEA;EACE,YAAY;EACZ,YAAY;EACZ,gBAAgB;AAClB;;AAEA;EACE,gBAAgB;AAClB;;AAEA;EACE,WAAW;AACb;;AAEA;EACE,iBAAiB;EACjB,eAAe;EACf,iBAAiB;EACjB,qBAAqB;EACrB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;EACvB,aAAa;AACf;;AAEA;EACE,eAAe;EACf,iBAAiB;EACjB,qBAAqB;EACrB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;AACzB;;AAEA;EACE,eAAe;EACf,iBAAiB;EACjB,qBAAqB;AACvB;;AAEA;EACE,YAAY;AACd;;AAEA;EACE,aAAa;EACb,yBAAyB;AAC3B;AACA;EACE,iBAAiB;AACnB;;AAEA;EACE,+BAA+B;EAC/B,kBAAkB;EAClB,uBAAuB;AACzB;AACA;EACE,cAAc;AAChB;;AAEA;EACE,aAAa;AACf;AACA;EACE,aAAa;AACf;;AAEA;EACE,kBAAkB;AACpB;;AAEA;EACE,gBAAgB;AAClB;;AAEA;EACE,eAAe;AACjB","sourcesContent":["body {\n    padding: 64px 0;\n    font-size: 16px;\n}\n\n#app {\n  margin: 0 auto;\n  width: calc(240px * 4 + var(--gutter-xl) * 3);\n}\n\nheader > h1 {\n    text-align: center;\n    font-weight: bold;\n    font-size: 34px;\n    line-height: 36px;\n    margin-bottom: 64px;\n}\n\n.nav {\n    display: flex;\n    justify-content: space-between;\n    margin-bottom: 39px;\n}\n\n.nav > .btn-group > .btn {\n  width: 117px;\n  height: 36px;\n  font-weight: 500;\n}\n\n.video-item {\n  overflow: hidden;\n}\n\n.video-item__thumbnail {\n  width: 100%;\n}\n\n.video-item__title {\n  font-weight: bold;\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 4px 0;\n}\n\n.video-item__channel-name {\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.video-item__published-date {\n  font-size: 12px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n}\n\n.video-item__save-button {\n  float: right;\n}\n\n.video-item__management {\n  display: flex;\n  justify-content: flex-end;\n}\n.video-item__management .btn {\n  margin-left: 10px;\n}\n\n#app > .saved-video-list-container {\n  max-height: calc(100vh - 200px);\n  overflow-y: scroll;\n  scroll-behavior: smooth;\n}\n#app > .saved-video-list-container .video-item {\n  display: block;\n}\n\n#app > .saved-video-list-container.visible-watch-later .video-item--watched {\n  display: none;\n}\n#app > .saved-video-list-container.visible-watched .video-item--watch-later {\n  display: none;\n}\n\n.no-saved-video {\n  text-align: center;\n}\n\n.no-saved-video .error-emoji {\n  font-size: 200px;\n}\n\n.no-saved-video .message {\n  font-size: 50px;\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body {\n    padding: 64px 0;\n    font-size: 16px;\n}\n\n#app {\n  margin: 0 auto;\n  width: calc(240px * 4 + var(--gutter-xl) * 3);\n}\n\nheader > h1 {\n    text-align: center;\n    font-weight: bold;\n    font-size: 34px;\n    line-height: 36px;\n    margin-bottom: 64px;\n}\n\n.nav {\n    display: flex;\n    justify-content: space-between;\n    margin-bottom: 39px;\n}\n\n.nav > .btn-group > .btn {\n  width: 117px;\n  height: 36px;\n  font-weight: 500;\n}\n\n.video-item {\n  overflow: hidden;\n}\n\n.video-item > .video-container {\n  position: relative;\n  padding-bottom: 56.25%;\n  padding-top: 30px;\n  height: 0;\n  overflow: hidden;\n}\n\n.video-item > .video-container iframe,\n.video-item > .video-container object,\n.video-item > .video-container embed { \n  position: absolute; \n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.video-item__thumbnail {\n  width: 100%;\n}\n\n.video-item__title {\n  font-weight: bold;\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 4px 0;\n}\n\n.video-item__channel-name {\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.video-item__published-date {\n  font-size: 12px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n}\n\n.video-item__save-button {\n  float: right;\n}\n\n.video-item__management {\n  display: flex;\n  justify-content: flex-end;\n}\n.video-item__management .btn {\n  margin-left: 10px;\n}\n\n#app > .saved-video-list-container {\n  max-height: calc(100vh - 200px);\n  overflow-y: scroll;\n  scroll-behavior: smooth;\n}\n#app > .saved-video-list-container .video-item {\n  display: block;\n}\n\n#app > .saved-video-list-container.visible-watch-later .video-item--watched {\n  display: none;\n}\n#app > .saved-video-list-container.visible-watched .video-item--watch-later {\n  display: none;\n}\n\n.no-saved-video {\n  text-align: center;\n}\n\n.no-saved-video.hide {\n  display: none;\n}\n\n.no-saved-video .error-emoji {\n  font-size: 200px;\n}\n\n.no-saved-video .message {\n  font-size: 50px;\n}", "",{"version":3,"sources":["webpack://./src/css/app.css"],"names":[],"mappings":"AAAA;IACI,eAAe;IACf,eAAe;AACnB;;AAEA;EACE,cAAc;EACd,6CAA6C;AAC/C;;AAEA;IACI,kBAAkB;IAClB,iBAAiB;IACjB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;;AAEA;IACI,aAAa;IACb,8BAA8B;IAC9B,mBAAmB;AACvB;;AAEA;EACE,YAAY;EACZ,YAAY;EACZ,gBAAgB;AAClB;;AAEA;EACE,gBAAgB;AAClB;;AAEA;EACE,kBAAkB;EAClB,sBAAsB;EACtB,iBAAiB;EACjB,SAAS;EACT,gBAAgB;AAClB;;AAEA;;;EAGE,kBAAkB;EAClB,MAAM;EACN,OAAO;EACP,WAAW;EACX,YAAY;AACd;;AAEA;EACE,WAAW;AACb;;AAEA;EACE,iBAAiB;EACjB,eAAe;EACf,iBAAiB;EACjB,qBAAqB;EACrB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;EACvB,aAAa;AACf;;AAEA;EACE,eAAe;EACf,iBAAiB;EACjB,qBAAqB;EACrB,mBAAmB;EACnB,gBAAgB;EAChB,uBAAuB;AACzB;;AAEA;EACE,eAAe;EACf,iBAAiB;EACjB,qBAAqB;AACvB;;AAEA;EACE,YAAY;AACd;;AAEA;EACE,aAAa;EACb,yBAAyB;AAC3B;AACA;EACE,iBAAiB;AACnB;;AAEA;EACE,+BAA+B;EAC/B,kBAAkB;EAClB,uBAAuB;AACzB;AACA;EACE,cAAc;AAChB;;AAEA;EACE,aAAa;AACf;AACA;EACE,aAAa;AACf;;AAEA;EACE,kBAAkB;AACpB;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,gBAAgB;AAClB;;AAEA;EACE,eAAe;AACjB","sourcesContent":["body {\n    padding: 64px 0;\n    font-size: 16px;\n}\n\n#app {\n  margin: 0 auto;\n  width: calc(240px * 4 + var(--gutter-xl) * 3);\n}\n\nheader > h1 {\n    text-align: center;\n    font-weight: bold;\n    font-size: 34px;\n    line-height: 36px;\n    margin-bottom: 64px;\n}\n\n.nav {\n    display: flex;\n    justify-content: space-between;\n    margin-bottom: 39px;\n}\n\n.nav > .btn-group > .btn {\n  width: 117px;\n  height: 36px;\n  font-weight: 500;\n}\n\n.video-item {\n  overflow: hidden;\n}\n\n.video-item > .video-container {\n  position: relative;\n  padding-bottom: 56.25%;\n  padding-top: 30px;\n  height: 0;\n  overflow: hidden;\n}\n\n.video-item > .video-container iframe,\n.video-item > .video-container object,\n.video-item > .video-container embed { \n  position: absolute; \n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.video-item__thumbnail {\n  width: 100%;\n}\n\n.video-item__title {\n  font-weight: bold;\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 4px 0;\n}\n\n.video-item__channel-name {\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.video-item__published-date {\n  font-size: 12px;\n  line-height: 24px;\n  letter-spacing: 0.5px;\n}\n\n.video-item__save-button {\n  float: right;\n}\n\n.video-item__management {\n  display: flex;\n  justify-content: flex-end;\n}\n.video-item__management .btn {\n  margin-left: 10px;\n}\n\n#app > .saved-video-list-container {\n  max-height: calc(100vh - 200px);\n  overflow-y: scroll;\n  scroll-behavior: smooth;\n}\n#app > .saved-video-list-container .video-item {\n  display: block;\n}\n\n#app > .saved-video-list-container.visible-watch-later .video-item--watched {\n  display: none;\n}\n#app > .saved-video-list-container.visible-watched .video-item--watch-later {\n  display: none;\n}\n\n.no-saved-video {\n  text-align: center;\n}\n\n.no-saved-video.hide {\n  display: none;\n}\n\n.no-saved-video .error-emoji {\n  font-size: 200px;\n}\n\n.no-saved-video .message {\n  font-size: 50px;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1126,7 +1130,7 @@ ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_modal_css__WEBPAC
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_skeleton_css__WEBPACK_IMPORTED_MODULE_7__["default"]);
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_responsive_css__WEBPACK_IMPORTED_MODULE_8__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nol,ul {\n  list-style: none;\n}\n\nhtml, body {\n  height: 100%;\n  -webkit-font-smoothing: antialiased;\n}\n\ninput, button, textarea, select {\n  font: inherit;\n}\n\n.search-result .no-result {\n  display: none;\n}\n\n.search-result--no-result .video-list {\n  display: none;\n}\n\n.search-result--no-result h3 {\n  display: none;\n}\n\n.search-result--no-result .no-result {\n  display: block;\n}\n", "",{"version":3,"sources":["webpack://./src/css/index.css"],"names":[],"mappings":"AAQA;EACE,SAAS;EACT,UAAU;EACV,sBAAsB;AACxB;;AAEA;EACE,gBAAgB;AAClB;;AAEA;EACE,YAAY;EACZ,mCAAmC;AACrC;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,cAAc;AAChB","sourcesContent":["@import \"./root.css\";\n@import \"./grid.css\";\n@import \"./button.css\";\n@import './app.css';\n@import './modal.css';\n@import './skeleton.css';\n@import \"./responsive.css\";\n\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nol,ul {\n  list-style: none;\n}\n\nhtml, body {\n  height: 100%;\n  -webkit-font-smoothing: antialiased;\n}\n\ninput, button, textarea, select {\n  font: inherit;\n}\n\n.search-result .no-result {\n  display: none;\n}\n\n.search-result--no-result .video-list {\n  display: none;\n}\n\n.search-result--no-result h3 {\n  display: none;\n}\n\n.search-result--no-result .no-result {\n  display: block;\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nol,ul {\n  list-style: none;\n}\n\nhtml, body {\n  height: 100%;\n  -webkit-font-smoothing: antialiased;\n}\n\na {\n  text-decoration: none;\n  color: inherit;\n  transition: opacity 0.3s;\n}\na:hover {\n  opacity: 0.6;\n}\n\ninput, button, textarea, select {\n  font: inherit;\n}\n\n.search-result .no-result {\n  display: none;\n}\n\n.search-result--no-result .video-list {\n  display: none;\n}\n\n.search-result--no-result h3 {\n  display: none;\n}\n\n.search-result--no-result .no-result {\n  display: block;\n}\n", "",{"version":3,"sources":["webpack://./src/css/index.css"],"names":[],"mappings":"AAQA;EACE,SAAS;EACT,UAAU;EACV,sBAAsB;AACxB;;AAEA;EACE,gBAAgB;AAClB;;AAEA;EACE,YAAY;EACZ,mCAAmC;AACrC;;AAEA;EACE,qBAAqB;EACrB,cAAc;EACd,wBAAwB;AAC1B;AACA;EACE,YAAY;AACd;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,aAAa;AACf;;AAEA;EACE,cAAc;AAChB","sourcesContent":["@import \"./root.css\";\n@import \"./grid.css\";\n@import \"./button.css\";\n@import './app.css';\n@import './modal.css';\n@import './skeleton.css';\n@import \"./responsive.css\";\n\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nol,ul {\n  list-style: none;\n}\n\nhtml, body {\n  height: 100%;\n  -webkit-font-smoothing: antialiased;\n}\n\na {\n  text-decoration: none;\n  color: inherit;\n  transition: opacity 0.3s;\n}\na:hover {\n  opacity: 0.6;\n}\n\ninput, button, textarea, select {\n  font: inherit;\n}\n\n.search-result .no-result {\n  display: none;\n}\n\n.search-result--no-result .video-list {\n  display: none;\n}\n\n.search-result--no-result h3 {\n  display: none;\n}\n\n.search-result--no-result .no-result {\n  display: block;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
